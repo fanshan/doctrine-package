@@ -1,0 +1,41 @@
+{
+  "name": "objective-php/doctrine-package",
+  "description": "Doctrine integration for Objective PHP",
+  "type": "library",
+  "keywords": [
+    "doctrine",
+    "objective php"
+  ],
+  "homepage": "https://github.com/objective-php/doctrine-package",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Gauthier 'Rusty' Delamarre",
+      "email": "gauthier@objective-php.org",
+      "role": "lead"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0"
+  },
+  "require-dev": {
+    "objective-php/phpunit-extension": "1.0",
+    "objective-php/primitives": "dev-master",
+    "objective-php/services-factory": "dev-master",
+    "objective-php/events-handler": "dev-master",
+    "objective-php/config": "dev-master",
+    "objective-php/message": "dev-master",
+    "objective-php/matcher": "dev-master",
+    "objective-php/application": "dev-master",
+    "doctrine/orm": ">=2.5",
+    "phpunit/phpunit": "4.*"
+  },
+  "suggest": {
+    "objective-php/matcher": "~1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "ObjectivePHP\\DoctrinePackage\\": "src/"
+    }
+  }
+}
