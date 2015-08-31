@@ -24,7 +24,7 @@
     "objective-php/message": "dev-master",
     "objective-php/matcher": "dev-master",
     "objective-php/application": "dev-master",
-    "doctrine/rm": ">=2.5"
+    "doctrine/orm": ">=2.5"
   },
   "require-dev": {
     "objective-php/phpunit-extension": "1.0",
