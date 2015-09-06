@@ -1,19 +1,12 @@
 <?php
-    /**
-     * Created by PhpStorm.
-     * User: gauthier
-     * Date: 01/09/15
-     * Time: 18:07
-     */
-    
     namespace ObjectivePHP\DoctrinePackage\Parameter;
     
     
     use Doctrine\ORM\EntityManager;
-    use ObjectivePHP\Application\Action\Param\AbstractExpectation;
+    use ObjectivePHP\Application\Action\Parameter\AbstractParameterProcessor;
     use ObjectivePHP\DoctrinePackage\Exception;
 
-    class EntityParameter extends AbstractExpectation
+    class EntityParameter extends AbstractParameterProcessor
     {
         /**
          * @var string Entity Manager name
