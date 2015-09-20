@@ -6,8 +6,16 @@
     use ObjectivePHP\Application\Action\Parameter\AbstractParameterProcessor;
     use ObjectivePHP\DoctrinePackage\Exception;
 
-    class EntityParameter extends AbstractParameterProcessor
+    /**
+     * Class EntityParameterProcessor
+     *
+     * @package ObjectivePHP\DoctrinePackage\Parameter
+     */
+    class EntityParameterProcessor extends AbstractParameterProcessor
     {
+
+        const ENTITY_NOT_FOUND = 'doctrine-package.entity.not-found';
+
         /**
          * @var string Entity Manager name
          */
@@ -24,12 +32,36 @@
         protected $filter;
 
 
+        /**
+         * Constructor
+         *
+         * @param string     $reference Parameter reference
+         * @param int|string $mapping   Query parameter name or position. If none provided, $reference is used as
+         *                              mapping.
+         */
+        public function __construct($reference, $mapping = null)
+        {
+            parent::__construct($reference, $mapping);
+
+            // set default messages
+            $this->setMessage(self::ENTITY_NOT_FOUND, 'No entity was found with given parameter ":param" with value ":value"');
+        }
+
 
         /**
          * @param $value
          */
         public function process($value)
         {
+
+            if($this->isMandatory())
+            {
+                if(is_null($value))
+                {
+                    throw new \ObjectivePHP\Application\Exception($this->getMessage());
+                }
+            }
+
             $emServiceId = 'doctrine.em.' . $this->getEmId();
 
             $em = $this->getApplication()->getServicesFactory()->get($emServiceId);
@@ -56,6 +88,15 @@
             {
                 $entity = $repository->find($value);
             }
+
+            if ($this->isMandatory())
+            {
+                if (empty($entity))
+                {
+                    throw new \ObjectivePHP\Application\Exception($this->getMessage(self::ENTITY_NOT_FOUND), ['value' => $value]);
+                }
+            }
+
 
             return $entity;
         }
