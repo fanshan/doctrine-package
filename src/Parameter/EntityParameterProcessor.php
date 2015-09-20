@@ -44,7 +44,7 @@
             parent::__construct($reference, $mapping);
 
             // set default messages
-            $this->setMessage(self::ENTITY_NOT_FOUND, 'No entity was found with given parameter ":param" with value ":value"');
+            $this->setMessage(self::ENTITY_NOT_FOUND, 'No ":entity" entity was found with given parameter ":param" having with value ":value"');
         }
 
 
@@ -93,7 +93,10 @@
             {
                 if (empty($entity))
                 {
-                    throw new Exception((string) $this->getMessage(self::ENTITY_NOT_FOUND)->setVariable('value', $value));
+                    throw new Exception((string) $this->getMessage(self::ENTITY_NOT_FOUND)
+                        ->setVariable('value', $value)
+                        ->setVariable('entity', $this->getEntity())
+                    );
                 }
             }
 
