@@ -93,7 +93,7 @@
             {
                 if (empty($entity))
                 {
-                    throw new \ObjectivePHP\Application\Exception($this->getMessage(self::ENTITY_NOT_FOUND)->setVariable(['value' => $value]));
+                    throw new Exception((string) $this->getMessage(self::ENTITY_NOT_FOUND)->setVariable('value', $value));
                 }
             }
 
