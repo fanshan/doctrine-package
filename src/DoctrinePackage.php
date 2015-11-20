@@ -7,6 +7,8 @@
     use ObjectivePHP\Application\Workflow\Event\WorkflowEvent;
     use ObjectivePHP\Config\Config;
     use ObjectivePHP\Primitives\Collection\Collection;
+    use ObjectivePHP\Primitives\Merger\MergePolicy;
+    use ObjectivePHP\Primitives\Merger\ValueMerger;
     use ObjectivePHP\Primitives\String\String;
 
     class DoctrinePackage
@@ -15,6 +17,9 @@
         {
             $workflow = $event->getApplication()->getWorkflow();
             $workflow->bind('packages.post', [$this, 'buildEntityManagers']);
+
+            // ensure several entities location can be provided
+            $event->getApplication()->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
         }
 
 
