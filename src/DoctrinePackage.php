@@ -7,9 +7,7 @@
     use ObjectivePHP\Application\Workflow\Event\WorkflowEvent;
     use ObjectivePHP\Config\Config;
     use ObjectivePHP\Primitives\Collection\Collection;
-    use ObjectivePHP\Primitives\Merger\MergePolicy;
-    use ObjectivePHP\Primitives\Merger\ValueMerger;
-    use ObjectivePHP\Primitives\String\String;
+    use ObjectivePHP\Primitives\String\Str;
 
     class DoctrinePackage
     {
@@ -52,7 +50,7 @@
                 $em = EntityManager::create($dbParams->toArray(), $emConfig);
 
                 // register entity manager as a service
-                $emServiceId = 'doctrine.em.' . String::cast($connection)->lower();
+                $emServiceId = 'doctrine.em.' . Str::cast($connection)->lower();
 
                 $event->getApplication()->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
 
