@@ -1,17 +1,21 @@
 <?php
-    namespace ObjectivePHP\DoctrinePackage\Parameter;
+    namespace ObjectivePHP\DoctrinePackage\Move;
     
     
     use Doctrine\ORM\EntityManager;
     use ObjectivePHP\Application\Action\Parameter\AbstractParameterProcessor;
+    use ObjectivePHP\Application\ApplicationAwareInterface;
+    use ObjectivePHP\Application\ApplicationInterface;
+    use ObjectivePHP\DataProcessor\AbstractDataProcessor;
+    use ObjectivePHP\DataProcessor\DataProcessorInterface;
     use ObjectivePHP\DoctrinePackage\Exception;
 
     /**
-     * Class EntityParameterProcessor
+     * Class EntityProcessor
      *
      * @package ObjectivePHP\DoctrinePackage\Parameter
      */
-    class EntityParameterProcessor extends AbstractParameterProcessor
+    class EntityProcessor extends AbstractDataProcessor implements ApplicationAwareInterface
     {
 
         const ENTITY_NOT_FOUND = 'doctrine-package.entity.not-found';
@@ -33,18 +37,23 @@
 
 
         /**
+         * @var ApplicationInterface
+         */
+        protected $application;
+
+        /**
          * Constructor
          *
          * @param string     $reference Parameter reference
          * @param int|string $mapping   Query parameter name or position. If none provided, $reference is used as
          *                              mapping.
          */
-        public function __construct($reference, $mapping = null)
+        public function __construct()
         {
-            parent::__construct($reference, $mapping);
+            parent::__construct();
 
             // set default messages
-            $this->setMessage(self::ENTITY_NOT_FOUND, 'No ":entity" entity was found with given parameter ":param" having with value ":value"');
+            $this->setMessage(self::ENTITY_NOT_FOUND, 'No ":entity" entity was found with ":value" as ":filter"');
         }
 
 
@@ -53,14 +62,6 @@
          */
         public function process($value)
         {
-
-            if($this->isMandatory())
-            {
-                if(is_null($value))
-                {
-                    throw new \ObjectivePHP\Application\Exception($this->getMessage());
-                }
-            }
 
             $emServiceId = 'doctrine.em.' . $this->getEmId();
 
@@ -89,15 +90,13 @@
                 $entity = $repository->find($value);
             }
 
-            if ($this->isMandatory())
+            if ($value && !$entity)
             {
-                if (empty($entity))
-                {
                     throw new Exception((string) $this->getMessage(self::ENTITY_NOT_FOUND)
                         ->setVariable('value', $value)
                         ->setVariable('entity', $this->getEntity())
+                        ->setVariable('filter', $this->getFilter() ?: 'primary key')
                     );
-                }
             }
 
 
@@ -160,6 +159,26 @@
         public function setFilter($filter)
         {
             $this->filter = $filter;
+
+            return $this;
+        }
+
+        /**
+         * @return ApplicationInterface
+         */
+        public function getApplication()
+        {
+            return $this->application;
+        }
+
+        /**
+         * @param ApplicationInterface $application
+         *
+         * @return $this
+         */
+        public function setApplication(ApplicationInterface $application)
+        {
+            $this->application = $application;
 
             return $this;
         }
