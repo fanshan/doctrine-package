@@ -1,13 +1,11 @@
 <?php
-    namespace ObjectivePHP\DoctrinePackage\Move;
+    namespace ObjectivePHP\DoctrinePackage\Processor;
     
     
     use Doctrine\ORM\EntityManager;
-    use ObjectivePHP\Application\Action\Parameter\AbstractParameterProcessor;
     use ObjectivePHP\Application\ApplicationAwareInterface;
     use ObjectivePHP\Application\ApplicationInterface;
     use ObjectivePHP\DataProcessor\AbstractDataProcessor;
-    use ObjectivePHP\DataProcessor\DataProcessorInterface;
     use ObjectivePHP\DoctrinePackage\Exception;
 
     /**

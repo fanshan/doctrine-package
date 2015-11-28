@@ -613,12 +613,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/application.git",
-                "reference": "ba71035c14ee67d397723d0f4648ab864892c52f"
+                "reference": "47270c0ca27ada5ce365906a9ef4df36bf690534"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/objective-php/application/zipball/ba71035c14ee67d397723d0f4648ab864892c52f",
-                "reference": "ba71035c14ee67d397723d0f4648ab864892c52f",
+                "url": "https://api.github.com/repos/objective-php/application/zipball/47270c0ca27ada5ce365906a9ef4df36bf690534",
+                "reference": "47270c0ca27ada5ce365906a9ef4df36bf690534",
                 "shasum": ""
             },
             "require": {
@@ -654,7 +654,7 @@
                 "framework",
                 "objective php"
             ],
-            "time": "2015-11-27 11:22:10"
+            "time": "2015-11-28 15:18:15"
         },
         {
             "name": "objective-php/components",
@@ -662,12 +662,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/components.git",
-                "reference": "16f66deefb825a4cb56d8928e5e3f47672f1833c"
+                "reference": "089404b5e7fcea1da39808a656d74e90cd96b694"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/objective-php/components/zipball/16f66deefb825a4cb56d8928e5e3f47672f1833c",
-                "reference": "16f66deefb825a4cb56d8928e5e3f47672f1833c",
+                "url": "https://api.github.com/repos/objective-php/components/zipball/089404b5e7fcea1da39808a656d74e90cd96b694",
+                "reference": "089404b5e7fcea1da39808a656d74e90cd96b694",
                 "shasum": ""
             },
             "require": {
@@ -680,7 +680,7 @@
                 "objective-php/primitives": "*"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.*"
+                "phpunit/phpunit": "5.*"
             },
             "type": "library",
             "autoload": {
@@ -710,7 +710,7 @@
                 "objective php",
                 "primitives"
             ],
-            "time": "2015-11-27 11:16:46"
+            "time": "2015-11-28 13:59:55"
         },
         {
             "name": "objective-php/events-handler",
