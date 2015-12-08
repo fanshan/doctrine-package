@@ -46,9 +46,11 @@
          * @param int|string $mapping   Query parameter name or position. If none provided, $reference is used as
          *                              mapping.
          */
-        public function __construct()
+        public function __construct(ApplicationInterface $app = null)
         {
             parent::__construct();
+
+            $this->setApplication($app);
 
             // set default messages
             $this->setMessage(self::ENTITY_NOT_FOUND, 'No ":entity" entity was found with ":value" as ":filter"');
