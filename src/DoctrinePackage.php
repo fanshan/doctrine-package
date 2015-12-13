@@ -14,7 +14,7 @@
     {
         public function __invoke(ApplicationInterface $application)
         {
-            $application->on('bootstrap')->plug([$this, 'buildEntityManagers']);
+            $application->getStep('bootstrap')->plug([$this, 'buildEntityManagers']);
 
             // initialize entities locations
             $application->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
