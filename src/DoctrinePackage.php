@@ -22,7 +22,7 @@
 
 
         /**
-         * @param WorkflowEvent $event
+         * @param ApplicationInterface $app
          *
          * @throws \Doctrine\ORM\ORMException
          * @throws \ObjectivePHP\Primitives\Exception
