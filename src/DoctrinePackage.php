@@ -4,6 +4,7 @@
 
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\Tools\Setup;
+    use ObjectivePHP\Application\ApplicationInterface;
     use ObjectivePHP\Application\Workflow\Event\WorkflowEvent;
     use ObjectivePHP\Config\Config;
     use ObjectivePHP\Primitives\Collection\Collection;
@@ -11,19 +12,25 @@
 
     class DoctrinePackage
     {
-        public function __invoke(WorkflowEvent $event)
+        public function __invoke(ApplicationInterface $application)
         {
-            $workflow = $event->getApplication()->getWorkflow();
-            $workflow->bind('packages.post', [$this, 'buildEntityManagers']);
+            $application->getStep('bootstrap')->plug([$this, 'buildEntityManagers']);
 
-            // ensure several entities location can be provided
-            $event->getApplication()->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
+            // initialize entities locations
+            $application->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
         }
 
 
-        public function buildEntityManagers(WorkflowEvent $event)
+        /**
+         * @param ApplicationInterface $app
+         *
+         * @throws \Doctrine\ORM\ORMException
+         * @throws \ObjectivePHP\Primitives\Exception
+         * @throws \ObjectivePHP\ServicesFactory\Exception
+         */
+        public function buildEntityManagers(ApplicationInterface $app)
         {
-            $config = $event->getApplication()->getConfig()->doctrine;
+            $config = $app->getConfig()->doctrine;
 
             foreach($config->em->toArray() as $connection => $params)
             {
@@ -52,7 +59,7 @@
                 // register entity manager as a service
                 $emServiceId = 'doctrine.em.' . Str::cast($connection)->lower();
 
-                $event->getApplication()->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
+                $app    ->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
 
             }
 
