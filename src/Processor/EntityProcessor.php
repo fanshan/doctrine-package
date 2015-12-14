@@ -1,17 +1,17 @@
 <?php
-    namespace ObjectivePHP\DoctrinePackage\Processor;
+    namespace ObjectivePHP\Package\Doctrine\Processor;
     
     
     use Doctrine\ORM\EntityManager;
     use ObjectivePHP\Application\ApplicationAwareInterface;
     use ObjectivePHP\Application\ApplicationInterface;
     use ObjectivePHP\DataProcessor\AbstractDataProcessor;
-    use ObjectivePHP\DoctrinePackage\Exception;
+    use ObjectivePHP\Package\Doctrine\Exception;
 
     /**
      * Class EntityProcessor
      *
-     * @package ObjectivePHP\DoctrinePackage\Parameter
+     * @package ObjectivePHP\Package\Doctrine\Parameter
      */
     class EntityProcessor extends AbstractDataProcessor implements ApplicationAwareInterface
     {

@@ -1,6 +1,6 @@
 <?php
 
-    namespace ObjectivePHP\DoctrinePackage;
+    namespace ObjectivePHP\Package\Doctrine;
 
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\Tools\Setup;

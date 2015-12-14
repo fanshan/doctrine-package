@@ -6,7 +6,7 @@
      * Time: 18:16
      */
     
-    namespace ObjectivePHP\DoctrinePackage;
+    namespace ObjectivePHP\Package\Doctrine;
     
     
     class Exception extends \Exception
