@@ -28,7 +28,7 @@
          */
         public function buildEntityManagers(ApplicationInterface $app)
         {
-            $entityManagers = $app->getConfig()->subset(Config\EntityManager::PREFIX);
+            $entityManagers = $app->getConfig()->subset(Config\EntityManager::class);
 
             foreach ($entityManagers as $connection => $params)
             {

@@ -14,5 +14,4 @@
 
     class EntityManager extends SingleValueDirectiveGroup
     {
-        const PREFIX = 'doctrine.entity-managers';
     }
