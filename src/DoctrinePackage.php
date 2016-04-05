@@ -34,8 +34,7 @@
             {
 
                 // normalize if needed
-
-                $entitiesPaths = $params['entities.locations'];
+                $entitiesPaths = $params['db']['entities.locations'];
 
                 Collection::cast($entitiesPaths)->each(function (&$path)
                 {
