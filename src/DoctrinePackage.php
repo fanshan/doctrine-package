@@ -3,6 +3,7 @@
     namespace ObjectivePHP\Package\Doctrine;
 
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
     use Doctrine\ORM\Tools\Setup;
     use ObjectivePHP\Application\ApplicationInterface;
     use ObjectivePHP\Primitives\Collection\Collection;
@@ -46,6 +47,7 @@
 
                 // TODO: handle isDev depending on app config
                 $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true);
+                $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
                 $em       = EntityManager::create($params['db'], $emConfig);
 
                 if(!empty($params['db']['mapping_types']) && is_array($params['db']['mapping_types']))
