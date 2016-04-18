@@ -48,6 +48,16 @@
                 $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true);
                 $em       = EntityManager::create($params['db'], $emConfig);
 
+                if(!empty($params['db']['mapping_types']) && is_array($params['db']['mapping_types']))
+                {
+                    $platform = $em->getConnection()->getDatabasePlatform();
+                    foreach($params['db']['mapping_types'] as $type => $mapping)
+                    {
+                        $platform->registerDoctrineTypeMapping($type, $mapping);
+                    }
+                }
+
+
                 // register entity manager as a service
                 $emServiceId = 'doctrine.em.' . Str::cast($connection)->lower();
 
