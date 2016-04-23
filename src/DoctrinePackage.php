@@ -16,7 +16,7 @@
             $application->getStep('bootstrap')->plug([$this, 'buildEntityManagers']);
 
             // initialize entities locations
-            $application->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
+            //$application->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
         }
 
 
@@ -33,9 +33,14 @@
 
             foreach ($entityManagers as $connection => $params)
             {
+                if(isset($params['db']))
+                {
+                    $params = $params['db'];
+                }
+
 
                 // normalize if needed
-                $entitiesPaths = $params['db']['entities.locations'];
+                $entitiesPaths = $params['entities.locations'];
 
                 Collection::cast($entitiesPaths)->each(function (&$path)
                 {
@@ -48,9 +53,9 @@
                 // TODO: handle isDev depending on app config
                 $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true);
                 $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
-                $em       = EntityManager::create($params['db'], $emConfig);
+                $em       = EntityManager::create($params, $emConfig);
 
-                if(!empty($params['db']['mapping_types']) && is_array($params['db']['mapping_types']))
+                if(!empty($params['db']['mapping_types']) && is_array($params['mapping_types']))
                 {
                     $platform = $em->getConnection()->getDatabasePlatform();
                     foreach($params['db']['mapping_types'] as $type => $mapping)
