@@ -69,6 +69,10 @@
                 $emServiceId = 'doctrine.em.' . Str::cast($connection)->lower();
 
                 $app->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
+                $app->getServicesFactory()
+                    ->registerService(['id' => 'db.connection.' . $connection, 'instance' => $em->getConnection()
+                                                                                                ->getWrappedConnection()])
+                ;
 
             }
 
