@@ -58,7 +58,11 @@
 
 
         /**
-         * @param $value
+         * @param mixed $value
+         *
+         * @return mixed|null|object
+         * @throws Exception
+         * @throws \ObjectivePHP\ServicesFactory\Exception
          */
         public function process($value)
         {
