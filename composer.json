@@ -17,9 +17,7 @@
   ],
   "require": {
     "php": ">=7.0",
-    "objective-php/components": "1.0.*",
-    "objective-php/message": "0.9.*",
-    "objective-php/application": "1.0.*",
+    "objective-php/application": "^1.0.6",
     "doctrine/orm": ">=2.5"
   },
   "require-dev": {
