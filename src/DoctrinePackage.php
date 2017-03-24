@@ -51,8 +51,14 @@
                     }
                 });
 
+                $useSimpleAnnotationReader = true;
+                if(isset($params['use_simple_annotation_reader']))
+                {
+                    $useSimpleAnnotationReader = (bool) $params['use_simple_annotation_reader'];
+                }
+
                 // TODO: handle isDev depending on app config
-                $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true);
+                $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true, null ,null, $useSimpleAnnotationReader);
                 $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
                 $em       = EntityManager::create($params, $emConfig);
 
