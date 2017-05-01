@@ -18,6 +18,7 @@
   "require": {
     "php": ">=7.0",
     "objective-php/application": "^1.0.6",
+    "objective-php/cli": "^1.0.4",
     "doctrine/orm": ">=2.5"
   },
   "require-dev": {
