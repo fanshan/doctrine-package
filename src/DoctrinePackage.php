@@ -7,17 +7,48 @@
     use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
     use Doctrine\ORM\Tools\Setup;
     use ObjectivePHP\Application\ApplicationInterface;
+    use ObjectivePHP\Cli\Router\CliRouter;
+    use ObjectivePHP\Package\Doctrine\Command\Doctrine;
     use ObjectivePHP\Primitives\Collection\Collection;
     use ObjectivePHP\Primitives\String\Str;
 
+    /**
+     * Class DoctrinePackage
+     * @package ObjectivePHP\Package\Doctrine
+     */
     class DoctrinePackage
     {
+
+        protected $cliRouterService;
+
+
+        /**
+         * DoctrinePackage constructor.
+         * @param string $cliRouterService
+         */
+        public function __construct($cliRouterService = 'cli.router')
+        {
+            $this->cliRouterService = $cliRouterService;
+        }
+
+
+        /**
+         * @param ApplicationInterface $application
+         */
         public function __invoke(ApplicationInterface $application)
         {
             $application->getStep('bootstrap')->plug([$this, 'buildEntityManagers']);
 
-            // initialize entities locations
-            //$application->getConfig()->merge(['doctrine.em.default.entities.locations' => []]);
+            // register CLI command
+            /** @var CliRouter $router */
+            $router = $application->getServicesFactory()->get($this->cliRouterService);
+
+            if($router) {
+                $router->registerCommand(new Doctrine());
+            } else {
+                throw new Exception('Cannot find ' . CliRouter::class . ' in ServicesFactory as "' . $this->cliRouterService . '"');
+            }
+
         }
 
 
