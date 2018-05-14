@@ -2,13 +2,13 @@
 
 namespace ObjectivePHP\Package\Doctrine\Config;
 
-use ObjectivePHP\Config\Directive\AbstractComplexDirective;
+use ObjectivePHP\Config\Directive\AbstractMultiComplexDirective;
 
 /**
  * Class EntityManager
  * @package ObjectivePHP\Package\Doctrine\Config
  */
-class EntityManager extends AbstractComplexDirective
+class EntityManager extends AbstractMultiComplexDirective
 {
     const KEY = 'doctrine';
 

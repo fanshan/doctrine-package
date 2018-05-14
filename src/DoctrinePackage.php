@@ -39,28 +39,35 @@ class DoctrinePackage implements PackageInterface, ConfigProviderInterface, Pack
     public function onPackagesInit(WorkflowEventInterface $event)
     {
         $params = $event->getApplication()->getConfig()->get(EM::KEY);
-        $params = $params->toArray();
 
-        $params['key'] = 'default';
+        foreach ($params as $name => $parameters) {
+            $parameters = $parameters->toArray();
 
-        // normalize if needed
-        $entitiesPaths = $params['entities'];
+            // normalize if needed
+            $entitiesPaths = $parameters['entities'];
 
-        // TODO: handle isDev depending on app config
-        $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true, null ,null, true);
-        $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
+            // TODO: handle isDev depending on app config
+            $emConfig = Setup::createAnnotationMetadataConfiguration(
+                (array) $entitiesPaths,
+                true,
+                null,
+                null,
+                true
+            );
+            $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
 
-        $em = $this->createEm($params, $emConfig);
+            $em = $this->createEm($parameters, $emConfig);
 
 
-        // register entity manager as a service
-        $emServiceId = 'doctrine.em.' . Str::cast($params['key'])->lower();
+            // register entity manager as a service
+            $emServiceId = 'doctrine.em.' . Str::cast($name)->lower();
 
-        $event->getApplication()->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
-        $event->getApplication()->getServicesFactory()
-            ->registerService(['id' => 'db.connection.' . $params['key'], 'instance' => $em->getConnection()
-                                                                                        ->getWrappedConnection()])
-            ;
+            $event->getApplication()->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
+            $event->getApplication()->getServicesFactory()
+                ->registerService(['id' => 'db.connection.' . $name, 'instance' => $em->getConnection()
+                                                                                            ->getWrappedConnection()])
+                ;
+        }
     }
 
     /**

@@ -15,8 +15,8 @@ use ObjectivePHP\Application\Workflow\WorkflowEvent;
 use ObjectivePHP\Config\Config;
 use ObjectivePHP\Package\Doctrine\DoctrinePackage;
 use ObjectivePHP\Package\Doctrine\Config\EntityManager;
-use ObjectivePHP\PHPUnit\TestCase;
 use ObjectivePHP\ServicesFactory\ServicesFactory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class DoctrinePackageTest
@@ -44,16 +44,17 @@ class DoctrinePackageTest extends TestCase
             ->set(
                 EntityManager::KEY,
                 [
-                    "driver" => "pdo_mysql",
-                    "host" => "test_db",
-                    "port" => "3306",
-                    "dbname" => "testDb",
-                    "user" => "user",
-                    "password" => "password",
-                    "entities" => "vendor/fei/test-common/src/Entity"
+                    "default" => [
+                        "driver" => "pdo_mysql",
+                        "host" => "test_db",
+                        "port" => "3306",
+                        "dbname" => "testDb",
+                        "user" => "user",
+                        "password" => "password",
+                        "entities" => "vendor/fei/test-common/src/Entity"
+                    ]
                 ]
             );
-
 
         $servicesFactory = $this->getMockBuilder(ServicesFactory::class)
             ->setMethods(['registerService'])

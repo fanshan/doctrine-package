@@ -1,4 +1,4 @@
 .idea
 vendor/*
-tests/coverage/*
+tests/_output/
 composer.phar
