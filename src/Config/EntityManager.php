@@ -1,165 +1,177 @@
 <?php
-/**
- * This file is part of the Objective PHP project
- *
- * More info about Objective PHP on www.objective-php.org
- *
- * @license http://opensource.org/licenses/GPL-3.0 GNU GPL License 3.0
- */
 
 namespace ObjectivePHP\Package\Doctrine\Config;
 
-use ObjectivePHP\Config\SingleValueDirectiveGroup;
+use ObjectivePHP\Config\Directive\AbstractComplexDirective;
 
-class EntityManager extends SingleValueDirectiveGroup
+/**
+ * Class EntityManager
+ * @package ObjectivePHP\Package\Doctrine\Config
+ */
+class EntityManager extends AbstractComplexDirective
 {
-    public function __construct($identifier, array $value = [])
+    const KEY = 'doctrine';
+
+    protected $key = self::KEY;
+
+    /**
+     * @var string $driver
+     */
+    protected $driver;
+
+    /**
+     * @var string $host
+     */
+    protected $host;
+
+    /**
+     * @var string $user
+     */
+    protected $user;
+
+    /**
+     * @var string $password
+     */
+    protected $password;
+
+    /**
+     * @var string $dbname
+     */
+    protected $dbname;
+
+    /**
+     * @var int $port
+     */
+    protected $port;
+
+    /**
+     * @var string $entities
+     */
+    protected $entities;
+
+    /**
+     * @return string
+     */
+    public function getDriver(): string
     {
-        parent::__construct($identifier, $value);
+        return $this->driver;
     }
 
     /**
-     * Set the driver of the doctrine connection
-     *
      * @param string $driver
-     *
      * @return EntityManager
      */
-    public function setDriver(string $driver) : EntityManager
+    public function setDriver(string $driver): EntityManager
     {
-        $this->value['driver'] = $driver;
-
+        $this->driver = $driver;
         return $this;
     }
 
     /**
-     * Set the host of the database
-     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
      * @param string $host
-     *
      * @return EntityManager
      */
-    public function setHost(string $host) : EntityManager
+    public function setHost(string $host): EntityManager
     {
-        $this->value['host'] = $host;
-
+        $this->host = $host;
         return $this;
     }
 
     /**
-     * Set the user of the database
-     *
+     * @return string
+     */
+    public function getUser(): string
+    {
+        return $this->user;
+    }
+
+    /**
      * @param string $user
-     *
      * @return EntityManager
      */
-    public function setUser(string $user) : EntityManager
+    public function setUser(string $user): EntityManager
     {
-        $this->value['user'] = $user;
-
+        $this->user = $user;
         return $this;
     }
 
     /**
-     * Set the password of the database
-     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
      * @param string $password
-     *
      * @return EntityManager
      */
-    public function setPassword(string $password) : EntityManager
+    public function setPassword(string $password): EntityManager
     {
-        $this->value['password'] = $password;
-
+        $this->password = $password;
         return $this;
     }
 
     /**
-     * Set the name of the database
-     *
+     * @return string
+     */
+    public function getDbname(): string
+    {
+        return $this->dbname;
+    }
+
+    /**
      * @param string $dbname
-     *
      * @return EntityManager
      */
-    public function setDbname(string $dbname) : EntityManager
+    public function setDbname(string $dbname): EntityManager
     {
-        $this->value['dbname'] = $dbname;
-
+        $this->dbname = $dbname;
         return $this;
     }
 
     /**
-     * Set the port of the database
-     *
+     * @return int
+     */
+    public function getPort(): int
+    {
+        return $this->port;
+    }
+
+    /**
      * @param int $port
-     *
      * @return EntityManager
      */
-    public function setPort(int $port) : EntityManager
+    public function setPort(int $port): EntityManager
     {
-        $this->value['port'] = $port;
-
+        $this->port = $port;
         return $this;
     }
 
     /**
-     * Set the mapping types used by doctrine
-     *
-     * @param array $mapping_types
-     *
-     * @return EntityManager
+     * @return string
      */
-    public function setMappingTypes(array $mapping_types) : EntityManager
+    public function getEntities(): string
     {
-        $this->value['mapping_types'] = $mapping_types;
-
-        return $this;
+        return $this->entities;
     }
 
     /**
-     * Add one mapping type that'll used by doctrine
-     *
-     * @param string $name the name of the mapping type
-     * @param string $type the type of the mapping type
-     *
+     * @param string $entities
      * @return EntityManager
      */
-    public function addMappingType(string $name, string $type) : EntityManager
+    public function setEntities(string $entities): EntityManager
     {
-        $this->value['mapping_types'][$name] = $type;
-
-        return $this;
-    }
-
-    /**
-     * Set the entities locations used by doctrine
-     *
-     * @param array $entities_locations
-     *
-     * @return EntityManager
-     */
-    public function setEntitiesLocations(array $entities_locations) : EntityManager
-    {
-        $this->value['entities.locations'] = $entities_locations;
-
-        return $this;
-    }
-
-    /**
-     * Add one entities location that'll used by doctrine
-     *
-     * @param string $location the path of the entities
-     *
-     * @return EntityManager
-     */
-    public function addEntitiesLocation(string $location) : EntityManager
-    {
-        $this->value['entities.locations'] = $this->value['entities.locations'] ?? [];
-
-        if (!in_array($location, $this->value['entities.locations'])) {
-            $this->value['entities.locations'][] = $location;
-        }
-
+        $this->entities = $entities;
         return $this;
     }
 }
