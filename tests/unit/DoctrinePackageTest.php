@@ -9,7 +9,6 @@
 
 namespace Tests\ObjectivePHP\Package\Doctrine;
 
-use Doctrine\DBAL\Connection;
 use ObjectivePHP\Application\ApplicationInterface;
 use ObjectivePHP\Application\Workflow\WorkflowEvent;
 use ObjectivePHP\Config\Config;
@@ -45,7 +44,7 @@ class DoctrinePackageTest extends TestCase
                 EntityManager::KEY,
                 [
                     "default" => [
-                        "driver" => "pdo_mysql",
+                        "driver" => "pdo_sqlite",
                         "host" => "test_db",
                         "port" => "3306",
                         "dbname" => "testDb",
@@ -67,12 +66,11 @@ class DoctrinePackageTest extends TestCase
         $app->method('getConfig')->willReturn($config);
         $app->method('getServicesFactory')->willReturn($servicesFactory);
 
-
         $package = $this->getMockBuilder(DoctrinePackage::class)
-            ->setMethods(['createEm'])
+            ->setMethods(['createEntityManager'])
             ->getMock();
 
-        $package->expects($this->once())->method('createEm')
+        $package->expects($this->once())->method('createEntityManager')
             ->willReturn(new testEm())
         ;
 

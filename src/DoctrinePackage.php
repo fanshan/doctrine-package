@@ -2,6 +2,7 @@
 
 namespace ObjectivePHP\Package\Doctrine;
 
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Setup;
@@ -14,6 +15,7 @@ use ObjectivePHP\Config\ConfigInterface;
 use ObjectivePHP\Config\ConfigProviderInterface;
 use ObjectivePHP\Primitives\String\Str;
 use ObjectivePHP\Config\Config;
+use ObjectivePHP\ServicesFactory\ServicesFactory;
 
 /**
  * Class DoctrinePackage
@@ -26,7 +28,7 @@ class DoctrinePackage implements PackageInterface, ConfigProviderInterface, Pack
     const SERVICE_PREFIX = 'doctrine.em.';
 
     /**
-     * @return ConfigInterface
+     * {@inheritdoc}
      */
     public function getConfig(): ConfigInterface
     {
@@ -34,50 +36,63 @@ class DoctrinePackage implements PackageInterface, ConfigProviderInterface, Pack
     }
 
     /**
-     * @param WorkflowEventInterface $event
+     * {@inheritdoc}
      */
     public function onPackagesInit(WorkflowEventInterface $event)
     {
-        $params = $event->getApplication()->getConfig()->get(EM::KEY);
+        $this->registerServices(
+            $event->getApplication()->getServicesFactory(),
+            $event->getApplication()->getConfig()->get(EM::KEY)
+        );
+    }
 
-        foreach ($params as $name => $parameters) {
-            $parameters = $parameters->toArray();
-
-            // normalize if needed
-            $entitiesPaths = $parameters['entities'];
-
-            // TODO: handle isDev depending on app config
+    /**
+     * Register Connection and EntityManager Services
+     *
+     * @param ServicesFactory $servicesFactory
+     * @param EM[]            $entityManagers
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ObjectivePHP\ServicesFactory\Exception\ServicesFactoryException
+     */
+    public function registerServices(ServicesFactory $servicesFactory, array $entityManagers)
+    {
+        foreach ($entityManagers as $name => $entityManager) {
+            //TODO: handle isDev depending on app config
             $emConfig = Setup::createAnnotationMetadataConfiguration(
-                (array) $entitiesPaths,
+                (array) $entityManager->getEntities(),
                 true,
                 null,
                 null,
                 true
             );
+
             $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
 
-            $em = $this->createEm($parameters, $emConfig);
-
+            $em = $this->createEntityManager($entityManager->toArray(), $emConfig);
 
             // register entity manager as a service
             $emServiceId = 'doctrine.em.' . Str::cast($name)->lower();
 
-            $event->getApplication()->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
-            $event->getApplication()->getServicesFactory()
-                ->registerService(['id' => 'db.connection.' . $name, 'instance' => $em->getConnection()
-                                                                                            ->getWrappedConnection()])
-                ;
+            $servicesFactory->registerService(['id' => $emServiceId, 'instance' => $em]);
+            $servicesFactory->registerService([
+                'id' => 'db.connection.' . $name,
+                'instance' => $em->getConnection()->getWrappedConnection()
+            ]);
         }
     }
 
     /**
-     * @param $params
-     * @param $config
+     * Factory for create a Doctrine EntityManager instance
+     *
+     * @param mixed         $conn   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config
+     *
      * @return EntityManager
-     * @codeCoverageIgnore
+     * @throws \Doctrine\ORM\ORMException
      */
-    protected function createEm($params, $config)
+    protected function createEntityManager($conn, Configuration $config)
     {
-        return EntityManager::create($params, $config);
+        return EntityManager::create($conn, $config);
     }
 }
