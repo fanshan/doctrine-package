@@ -1,121 +1,98 @@
 <?php
 
-    namespace ObjectivePHP\Package\Doctrine;
+namespace ObjectivePHP\Package\Doctrine;
 
-    use Doctrine\DBAL\Types\Type;
-    use Doctrine\ORM\EntityManager;
-    use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
-    use Doctrine\ORM\Tools\Setup;
-    use ObjectivePHP\Application\ApplicationInterface;
-    use ObjectivePHP\Cli\Router\CliRouter;
-    use ObjectivePHP\Package\Doctrine\Command\Doctrine;
-    use ObjectivePHP\Primitives\Collection\Collection;
-    use ObjectivePHP\Primitives\String\Str;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\ORM\Tools\Setup;
+use ObjectivePHP\Application\Package\PackageInterface;
+use ObjectivePHP\Application\Workflow\PackagesInitListener;
+use ObjectivePHP\Application\Workflow\WorkflowEventInterface;
+use ObjectivePHP\Package\Doctrine\Config\EntityManager as EM;
+use ObjectivePHP\Config\ConfigAccessorsTrait;
+use ObjectivePHP\Config\ConfigInterface;
+use ObjectivePHP\Config\ConfigProviderInterface;
+use ObjectivePHP\Primitives\String\Str;
+use ObjectivePHP\Config\Config;
+use ObjectivePHP\ServicesFactory\ServicesFactory;
+
+/**
+ * Class DoctrinePackage
+ * @package Fei\Service\SecondPartyLogistics\Tool\Package\Doctrine
+ */
+class DoctrinePackage implements PackageInterface, ConfigProviderInterface, PackagesInitListener
+{
+    use ConfigAccessorsTrait;
+
+    const SERVICE_PREFIX = 'doctrine.em.';
 
     /**
-     * Class DoctrinePackage
-     * @package ObjectivePHP\Package\Doctrine
+     * {@inheritdoc}
      */
-    class DoctrinePackage
+    public function getConfig(): ConfigInterface
     {
+        return new Config(new EM());
+    }
 
-        protected $cliRouterService;
+    /**
+     * {@inheritdoc}
+     */
+    public function onPackagesInit(WorkflowEventInterface $event)
+    {
+        $this->registerServices(
+            $event->getApplication()->getServicesFactory(),
+            $event->getApplication()->getConfig()->get(EM::KEY)
+        );
+    }
 
+    /**
+     * Register Connection and EntityManager Services
+     *
+     * @param ServicesFactory $servicesFactory
+     * @param EM[]            $entityManagers
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ObjectivePHP\ServicesFactory\Exception\ServicesFactoryException
+     */
+    public function registerServices(ServicesFactory $servicesFactory, array $entityManagers)
+    {
+        foreach ($entityManagers as $name => $entityManager) {
+            //TODO: handle isDev depending on app config
+            $emConfig = Setup::createAnnotationMetadataConfiguration(
+                (array) $entityManager->getEntities(),
+                true,
+                null,
+                null,
+                true
+            );
 
-        /**
-         * DoctrinePackage constructor.
-         * @param string $cliRouterService
-         */
-        public function __construct($cliRouterService = 'cli.router')
-        {
-            $this->cliRouterService = $cliRouterService;
-        }
+            $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
 
+            $em = $this->createEntityManager($entityManager->toArray(), $emConfig);
 
-        /**
-         * @param ApplicationInterface $application
-         */
-        public function __invoke(ApplicationInterface $application)
-        {
-            $application->getStep('bootstrap')->plug([$this, 'buildEntityManagers']);
+            // register entity manager as a service
+            $emServiceId = 'doctrine.em.' . Str::cast($name)->lower();
 
-            // register CLI command
-            /** @var CliRouter $router */
-            $router = $application->getServicesFactory()->get($this->cliRouterService);
-
-            if($router) {
-                $router->registerCommand(new Doctrine());
-            } else {
-                throw new Exception('Cannot find ' . CliRouter::class . ' in ServicesFactory as "' . $this->cliRouterService . '"');
-            }
-
-        }
-
-
-        /**
-         * @param ApplicationInterface $app
-         *
-         * @throws \Doctrine\ORM\ORMException
-         * @throws \ObjectivePHP\Primitives\Exception
-         * @throws \ObjectivePHP\ServicesFactory\Exception
-         */
-        public function buildEntityManagers(ApplicationInterface $app)
-        {
-            $entityManagers = $app->getConfig()->subset(Config\EntityManager::class);
-
-            foreach ($entityManagers as $connection => $params)
-            {
-                if(isset($params['db']))
-                {
-                    $params = $params['db'];
-                }
-
-
-                // normalize if needed
-                $entitiesPaths = $params['entities.locations'];
-
-                Collection::cast($entitiesPaths)->each(function (&$path)
-                {
-                    if (strpos($path, '/') !== 0)
-                    {
-                        $path = getcwd() . '/' . $path;
-                    }
-                });
-
-                $useSimpleAnnotationReader = true;
-                if(isset($params['use_simple_annotation_reader']))
-                {
-                    $useSimpleAnnotationReader = (bool) $params['use_simple_annotation_reader'];
-                }
-
-                // TODO: handle isDev depending on app config
-                $emConfig = Setup::createAnnotationMetadataConfiguration((array) $entitiesPaths, true, null ,null, $useSimpleAnnotationReader);
-                $emConfig->setNamingStrategy(new UnderscoreNamingStrategy());
-                $em       = EntityManager::create($params, $emConfig);
-
-                if(!empty($params['mapping_types']) && is_array($params['mapping_types']))
-                {
-                    $platform = $em->getConnection()->getDatabasePlatform();
-                    foreach($params['mapping_types'] as $type => $mapping)
-                    {
-                        if (!Type::hasType($type) && class_exists($mapping)) {
-                            Type::addType($type, $mapping);
-                            $mapping = $type;
-                        }
-                        $platform->registerDoctrineTypeMapping($type, $mapping);
-                    }
-                }
-
-                // register entity manager as a service
-                $emServiceId = 'doctrine.em.' . Str::cast($connection)->lower();
-
-                $app->getServicesFactory()->registerService(['id' => $emServiceId, 'instance' => $em]);
-                $app->getServicesFactory()
-                    ->registerService(['id' => 'db.connection.' . $connection, 'instance' => $em->getConnection()
-                                                                                                ->getWrappedConnection()])
-                ;
-
-            }
-
+            $servicesFactory->registerService(['id' => $emServiceId, 'instance' => $em]);
+            $servicesFactory->registerService([
+                'id' => 'db.connection.' . $name,
+                'instance' => $em->getConnection()->getWrappedConnection()
+            ]);
         }
     }
+
+    /**
+     * Factory for create a Doctrine EntityManager instance
+     *
+     * @param mixed         $conn   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config
+     *
+     * @return EntityManager
+     * @throws \Doctrine\ORM\ORMException
+     */
+    protected function createEntityManager($conn, Configuration $config)
+    {
+        return EntityManager::create($conn, $config);
+    }
+}

@@ -17,12 +17,13 @@
   ],
   "require": {
     "php": ">=7.0",
-    "objective-php/application": "^1.0.6",
-    "objective-php/cli": "^1.0.4",
+    "objective-php/application": "^2.0",
+    "objective-php/services-factory": "^2.0",
+    "objective-php/config": "^2.0",
     "doctrine/orm": ">=2.5"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.*"
+    "codeception/codeception": "^2.4"
   },
   "suggest": {
     "objective-php/matcher": "~1.1"
